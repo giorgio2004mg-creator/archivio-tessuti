@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Archivio Tessuti</title>
+<style>
+  /* ====== CARATTERI: copie locali da Google Fonts (licenza OFL) in risorse/,
+     cosi' la pagina funziona anche senza internet ====== */
+  @font-face { font-family: "Barlow Condensed"; font-weight: 500; font-display: swap; src: url("risorse/barlow-condensed-500.woff2") format("woff2"); }
+  @font-face { font-family: "Barlow Condensed"; font-weight: 600; font-display: swap; src: url("risorse/barlow-condensed-600.woff2") format("woff2"); }
+  @font-face { font-family: "Work Sans"; font-weight: 400 600; font-display: swap; src: url("risorse/work-sans.woff2") format("woff2"); }
+  @font-face { font-family: "Zilla Slab"; font-weight: 600; font-display: swap; src: url("risorse/zilla-slab-600.woff2") format("woff2"); }
+  @font-face { font-family: "Zilla Slab"; font-weight: 700; font-display: swap; src: url("risorse/zilla-slab-700.woff2") format("woff2"); }
+
+  /* ====== COLORI E CARATTERI (tema chiaro e scuro automatico) ======
+     Stile ispirato a Tecovas: fondo crema, ruggine e terracotta, pulsanti a pillola.
+     I caratteri originali (Mundial, Borax, Lorimer) sono a pagamento: qui ci sono
+     alternative gratuite di Google Fonts. Senza internet si usano quelli di riserva. */
+  :root {
+    --sfondo: #fcf9f4; --pannello: #ffffff; --testo: #1a1a1a; --tenue: #656563;
+    --bordo: #e4ddd2; --accento: #7a2519; --accento-2: #c04d2d; --accento-chiaro: #f3e7dc;
+    --scuro: #2b1d17; --su-scuro: #f3ece4; --ombra: none;
+    --raggio: 4px; --pillola: 9999px;
+    --carattere: "Work Sans", Verdana, sans-serif;
+    --titoli: "Zilla Slab", "Times New Roman", serif;
+    --etichette: "Barlow Condensed", "Arial Narrow", sans-serif;
+  }
+  /* Tema scuro: automatico dal sistema, oppure forzato con data-theme sulla pagina */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --sfondo: #17120f; --pannello: #211a16; --testo: #f3ece4; --tenue: #b3a89c;
+      --bordo: #3a2f28; --accento: #e08a6a; --accento-2: #e8a184; --accento-chiaro: #3a241b;
+      --scuro: #0f0b09; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --sfondo: #17120f; --pannello: #211a16; --testo: #f3ece4; --tenue: #b3a89c;
+    --bordo: #3a2f28; --accento: #e08a6a; --accento-2: #e8a184; --accento-chiaro: #3a241b;
+    --scuro: #0f0b09; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body { margin: 0; font-family: var(--carattere); background: var(--sfondo); color: var(--testo); font-size: 15px; }
+  h1, h2, h3 { font-family: var(--titoli); font-weight: 700; }
+  .etichetta { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+
+  /* ====== BARRA AVVISI IN CIMA (si chiude con la ✕) ====== */
+  #avviso { background: var(--accento); color: #fff; font-size: 13px; text-align: center; padding: 7px 40px; position: relative; }
+  #avviso[hidden] { display: none; }
+  #avviso button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 0 8px;
+                   border: none; background: none; color: inherit; font-size: 16px; }
+
+  /* ====== INTESTAZIONE: logo, ricerca, selezione ====== */
+  header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--sfondo); border-bottom: 1px solid var(--bordo);
+           padding: 12px 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .logo { font-family: var(--titoli); font-size: 24px; font-weight: 700; margin: 0; color: var(--accento);
+          letter-spacing: .02em; text-decoration: none; white-space: nowrap; }
+  #ricerca { flex: 1; min-width: 200px; padding: 10px 14px; font-size: 15px; border: 1px solid #c2c2c0;
+             border-radius: var(--raggio); background: var(--pannello); color: var(--testo); font-family: inherit; }
+  #ricerca:focus { outline: 2px solid var(--accento); border-color: transparent; }
+  #apriFiltri { display: none; }
+  .badge { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 4px; border-radius: var(--pillola);
+           background: var(--accento); color: #fff; font-size: 12px; font-weight: 600; text-align: center; }
+  .badge:empty { display: none; }
+
+  /* ====== MENU DI NAVIGAZIONE ====== */
+  nav.menu { display: flex; justify-content: center; gap: 4px 26px; flex-wrap: wrap; padding: 10px 24px;
+             border-bottom: 1px solid var(--bordo); }
+  nav.menu a, nav.menu summary { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .08em;
+             font-weight: 600; font-size: 15px; color: var(--testo); text-decoration: none; cursor: pointer; padding: 4px 0; }
+  nav.menu a:hover, nav.menu summary:hover { color: var(--accento); }
+  nav.menu details { position: relative; border: none; padding: 0; }
+  nav.menu summary { list-style: none; }
+  nav.menu summary::-webkit-details-marker { display: none; }
+  nav.menu summary::after { content: " ▾"; font-size: 12px; }
+  .tendina { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); z-index: 20; margin-top: 8px;
+             background: var(--pannello); border: 1px solid var(--bordo); padding: 10px; min-width: 220px;
+             display: grid; gap: 2px; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+  .tendina a { padding: 6px 10px !important; font-size: 14px !important; }
+
+  /* ====== PULSANTI ====== */
+  button { font: inherit; cursor: pointer; border-radius: var(--raggio); padding: 8px 12px; border: 1px solid var(--bordo);
+           background: var(--pannello); color: var(--testo); }
+  button:hover { border-color: var(--accento); }
+  button:disabled { opacity: .4; cursor: default; border-color: var(--bordo); }
+  .pillola { border-radius: var(--pillola); background: var(--accento); border: 1px solid var(--accento); color: #fff;
+             padding: 12px 28px; font-family: var(--etichette); text-transform: uppercase; letter-spacing: .1em;
+             font-weight: 600; font-size: 15px; text-decoration: none; display: inline-block; }
+  .pillola:hover { background: var(--accento-2); border-color: var(--accento-2); }
+  .pillola.chiara { background: transparent; color: #fff; border-color: #fff; }
+  .pillola.chiara:hover { background: #fff; color: var(--accento); }
+
+  /* ====== IMMAGINE DI APERTURA ====== */
+  .apertura { position: relative; min-height: 460px; display: flex; align-items: flex-end; color: #fff;
+              background: #3b2a20 center / cover no-repeat; }
+  .apertura::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(20,10,5,.7), rgba(20,10,5,.05) 65%); }
+  .apertura .testo { position: relative; padding: 48px 6vw; max-width: 760px; }
+  .apertura h2 { font-size: clamp(36px, 6vw, 64px); line-height: 1; margin: 0 0 12px; }
+  .apertura p { font-size: 17px; margin: 0 0 22px; }
+  .apertura .azioni { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ====== SEZIONI DELLA PAGINA ====== */
+  .sezione { max-width: 1500px; margin: 0 auto; padding: 48px 24px 8px; }
+  .sezione > h2 { font-size: 30px; margin: 0 0 18px; text-align: center; }
+
+  /* Vetrina con schede per stagione (come "New Arrivals / Best Sellers") */
+  .schede-tab { display: flex; justify-content: center; gap: 28px; margin-bottom: 22px; }
+  .schede-tab button { border: none; background: none; padding: 4px 0; font-family: var(--etichette); text-transform: uppercase;
+                       letter-spacing: .08em; font-weight: 600; font-size: 16px; color: var(--tenue); border-bottom: 2px solid transparent; border-radius: 0; }
+  .schede-tab button[aria-selected="true"] { color: var(--testo); border-bottom-color: var(--accento); }
+  .carosello { position: relative; }
+  .carosello-riga { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 22%); gap: 18px;
+                    overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; }
+  .carosello-riga > * { scroll-snap-align: start; }
+  .freccia { position: absolute; top: 38%; width: 42px; height: 42px; border-radius: 50%; padding: 0; font-size: 20px;
+             background: var(--pannello); box-shadow: 0 2px 10px rgba(0,0,0,.15); z-index: 2; }
+  .freccia.sx { left: -14px; } .freccia.dx { right: -14px; }
+  .pezzo { cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+  .pezzo .foto { aspect-ratio: 4 / 5; margin-bottom: 8px; }
+  .pezzo b { font-family: var(--titoli); font-size: 17px; }
+  .pezzo small { color: var(--tenue); }
+  .pezzo:hover b { color: var(--accento); }
+
+  /* Categorie rotonde (come MENS / WOMENS / KIDS) */
+  #categorie { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; }
+  .cat { display: flex; flex-direction: column; align-items: center; gap: 8px; border: none; background: none; padding: 0; width: 108px; }
+  .cat .tondo { width: 96px; height: 96px; border-radius: 50%; overflow: hidden; border: 2px solid transparent; background: var(--accento-chiaro); }
+  .cat .tondo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cat span { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; font-size: 14px; text-align: center; }
+  .cat:hover .tondo, .cat[aria-pressed="true"] .tondo { border-color: var(--accento); }
+  .cat[aria-pressed="true"] span { color: var(--accento); }
+
+  /* Frase manifesto */
+  .manifesto { text-align: center; max-width: 900px; margin: 0 auto; padding: 56px 24px 16px; }
+  .manifesto h2 { font-size: clamp(26px, 3.4vw, 40px); line-height: 1.2; margin: 0; color: var(--accento); }
+
+  /* Banner del campionario con le ubicazioni (come "The Tecovas Experience") */
+  .banner { display: grid; grid-template-columns: 1.3fr 1fr; background: var(--accento-chiaro); margin-top: 48px; }
+  .banner .immagine { min-height: 340px; background: #3b2a20 center / cover no-repeat; }
+  .banner .testo { padding: 40px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .banner h2 { font-size: 32px; margin: 0; }
+  .banner p { margin: 0; color: var(--tenue); }
+  #piani { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  #piani button { border-radius: var(--pillola); border-color: var(--accento); color: var(--accento); background: transparent; padding: 6px 16px; }
+  #piani button:hover { background: var(--accento); color: #fff; }
+
+  /* ====== CATALOGO: filtri a sinistra, schede a destra ====== */
+  .layout { display: grid; grid-template-columns: 270px 1fr; gap: 28px; padding: 20px 24px; max-width: 1500px; margin: 0 auto; }
+  aside { background: var(--pannello); border: 1px solid var(--bordo); border-radius: var(--raggio); padding: 14px;
+          align-self: start; position: sticky; top: 84px; max-height: calc(100vh - 104px); overflow-y: auto; }
+  .colonna { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ====== FILTRI ====== */
+  details { border-bottom: 1px solid var(--bordo); padding: 8px 0; }
+  details:last-of-type { border-bottom: none; }
+  summary { cursor: pointer; font-weight: 600; padding: 4px 0; list-style-position: inside; }
+  aside summary { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .06em; font-size: 15px; }
+  summary .attivi { color: var(--accento); font-weight: 600; font-size: 13px; }
+  .opzioni { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
+  .opzioni label { display: flex; align-items: center; gap: 8px; padding: 3px 4px; border-radius: var(--raggio); cursor: pointer; }
+  .opzioni label:hover { background: var(--accento-chiaro); }
+  .opzioni .n { margin-left: auto; color: var(--tenue); font-size: 12px; }
+  .opzioni label.vuota { opacity: .45; }
+  input[type=checkbox] { accent-color: var(--accento); }
+  .pallino { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(128,128,128,.5); flex: none; }
+  .intervallo { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .intervallo input, select { width: 100%; padding: 6px 8px; border: 1px solid #c2c2c0; border-radius: var(--raggio);
+                      background: var(--pannello); color: var(--testo); font-size: 14px; font-family: inherit; }
+  .nota { font-size: 12px; color: var(--tenue); margin: 6px 0 0; }
+  #azzera { width: 100%; margin-bottom: 8px; border-radius: var(--pillola); }
+
+  /* ====== BARRA SOPRA LE SCHEDE: conteggio, ordinamento, vista, filtri attivi ====== */
+  .barra { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  #conteggio { color: var(--tenue); white-space: nowrap; margin-right: auto; }
+  .barra label { display: flex; align-items: center; gap: 8px; color: var(--tenue); font-size: 14px; }
+  .barra select { width: auto; }
+  #chip { display: flex; flex-wrap: wrap; gap: 6px; }
+  #chip:empty { display: none; }
+  .chip { border-radius: var(--pillola); padding: 4px 12px; font-size: 13px; background: var(--accento-chiaro); border-color: transparent; }
+  .chip.tutti { background: none; text-decoration: underline; color: var(--tenue); }
+
+  /* ====== SCHEDE DEI TESSUTI ====== */
+  #lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 28px 20px; align-content: start; }
+  .scheda { background: transparent; display: flex; flex-direction: column; cursor: pointer; }
+  .scheda:hover b { color: var(--accento); }
+  .scheda:focus-visible, .mini:focus-visible, .pezzo:focus-visible, .cat:focus-visible { outline: 2px solid var(--accento); outline-offset: 3px; }
+  .foto { aspect-ratio: 4 / 5; background: var(--accento-chiaro); position: relative; overflow: hidden; }
+  .foto img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
+  .scheda:hover .foto img, .pezzo:hover .foto img { transform: scale(1.04); }
+  .foto .manca { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+                 font-size: 12px; text-align: center; padding: 6px 10px; border-radius: var(--raggio);
+                 color: #fff; background: rgba(0,0,0,.55); white-space: nowrap; }
+  .foto .manca[hidden] { display: none; }
+  .stato-off { position: absolute; top: 10px; left: 10px; background: #b3261e; color: #fff; font-size: 12px; padding: 2px 10px; border-radius: var(--pillola); }
+  .stagione { position: absolute; left: 10px; bottom: 10px; font-family: var(--etichette); font-size: 12px; font-weight: 600;
+              letter-spacing: .08em; padding: 2px 10px; border-radius: var(--pillola); background: rgba(252,249,244,.95); color: #1a1a1a; }
+  .mini .stagione, .mini .stato-off, .mini .manca { display: none; }
+  .cuore { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; padding: 0; border-radius: 50%;
+           border: none; background: rgba(252,249,244,.95); color: #7a2519; font-size: 18px; line-height: 1; }
+  .cuore[aria-pressed="true"] { background: #7a2519; color: #fff; }
+  .corpo { padding: 12px 2px 0; display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  .titolo { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .titolo b { font-family: var(--titoli); font-size: 19px; }
+  .codice { color: var(--tenue); font-size: 12px; font-family: ui-monospace, Consolas, monospace; }
+  .tipo { font-family: var(--etichette); font-size: 13px; color: var(--accento); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .colori { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; }
+  .colori span { display: inline-flex; align-items: center; gap: 5px; }
+  .dati { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: 13px; margin: 2px 0 0; }
+  .dati dt { color: var(--tenue); }
+  .dati dd { margin: 0; }
+  .descr { font-size: 13px; color: var(--tenue); font-style: italic; }
+  .crediti { font-size: 11px; color: var(--tenue); margin-top: auto; padding-top: 4px; }
+  mark { background: #f5d76e; color: #000; border-radius: 2px; }
+  #vuoto { text-align: center; color: var(--tenue); padding: 60px 20px; grid-column: 1 / -1; }
+
+  /* Vista compatta: solo foto, nome e codice */
+  #lista.compatta { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px 14px; }
+  #lista.compatta .tipo, #lista.compatta .colori, #lista.compatta .dati, #lista.compatta .descr { display: none; }
+  #lista.compatta .corpo { padding-top: 8px; }
+  #lista.compatta .titolo { flex-direction: column; gap: 0; }
+  #lista.compatta .titolo b { font-size: 16px; }
+
+  /* Visti di recente */
+  #recenti { border-top: 1px solid var(--bordo); padding-top: 12px; }
+  #recenti:empty { display: none; }
+  #recenti .testa { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  #recenti h3 { font-size: 17px; margin: 0; }
+  #recenti .testa button { padding: 2px 10px; font-size: 12px; color: var(--tenue); border-radius: var(--pillola); }
+  .recenti-riga { display: flex; gap: 12px; overflow-x: auto; }
+  .recenti-riga .mini { width: 92px; flex: none; }
+
+  /* ====== PIE' DI PAGINA SCURO A COLONNE ====== */
+  footer { background: var(--scuro); color: var(--su-scuro); margin-top: 56px; padding: 48px 24px 24px; }
+  .colonne { max-width: 1500px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); gap: 32px; }
+  footer h3 { font-size: 18px; margin: 0 0 12px; }
+  footer .logo { color: var(--su-scuro); }
+  footer p, footer li { font-size: 14px; color: #cfc4b8; }
+  footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  footer a { color: #cfc4b8; text-decoration: none; cursor: pointer; }
+  footer a:hover { color: #fff; text-decoration: underline; }
+  footer details { border-bottom: 1px solid rgba(255,255,255,.15); padding: 6px 0; }
+  footer summary { font-size: 14px; }
+  footer details p { margin: 6px 0 4px; font-size: 13px; }
+  #piede { max-width: 1500px; margin: 32px auto 0; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.15);
+           font-size: 12px; color: #a99c8f; display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
+  #piede a { color: inherit; text-decoration: underline; }
+
+  /* ====== FINESTRE: scheda di dettaglio e selezione ====== */
+  dialog { border: none; border-radius: var(--raggio); padding: 0; background: var(--sfondo); color: var(--testo);
+           width: min(1000px, calc(100vw - 32px)); max-height: calc(100vh - 32px); box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+  dialog::backdrop { background: rgba(20,10,5,.6); }
+  #selezione { width: min(640px, calc(100vw - 32px)); }
+  .finestra-barra { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+                    background: var(--sfondo); border-bottom: 1px solid var(--bordo); }
+  .finestra-barra .pos { color: var(--tenue); font-size: 13px; min-width: 70px; text-align: center; }
+  .finestra-barra h2 { font-size: 18px; margin: 0; }
+  .chiudi { margin-left: auto; font-size: 18px; line-height: 1; padding: 6px 12px; }
+  .dett { display: grid; grid-template-columns: 1fr 1fr; }
+  .dett .foto { aspect-ratio: 4 / 5; }
+  .dett-info { padding: 24px 28px; display: flex; flex-direction: column; gap: 12px; }
+  .dett-info h2 { font-size: 34px; margin: 0; }
+  .dett-info .dati { font-size: 14px; gap: 6px 14px; padding: 12px 0; border-top: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); }
+  .cuore-grande { border-radius: var(--pillola); padding: 12px 20px; background: var(--accento); border-color: var(--accento); color: #fff;
+                  font-family: var(--etichette); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  .cuore-grande[aria-pressed="true"] { background: transparent; color: var(--accento); }
+  .simili { padding: 18px 28px 28px; border-top: 1px solid var(--bordo); }
+  .simili h3 { font-size: 20px; margin: 0 0 12px; }
+  .simili-griglia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .mini { cursor: pointer; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+  .mini .foto { aspect-ratio: 1; margin-bottom: 4px; }
+  .mini:hover b { color: var(--accento); }
+  .sel-corpo { padding: 8px 18px 18px; }
+  .sel-corpo h3 { font-family: var(--etichette); font-size: 14px; color: var(--tenue); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 6px; }
+  .riga { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--bordo); }
+  .riga .pallino { width: 36px; height: 36px; border-radius: var(--raggio); }
+  .riga [data-apri] { flex: 1; cursor: pointer; }
+  .riga small { display: block; color: var(--tenue); font-size: 12px; }
+  .sel-azioni { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 16px; }
+  .sel-azioni button { border-radius: var(--pillola); }
+
+  /* ====== SCHERMI PICCOLI ====== */
+  @media (max-width: 900px) {
+    .colonne { grid-template-columns: 1fr 1fr; }
+    .banner { grid-template-columns: 1fr; }
+    .carosello-riga { grid-auto-columns: minmax(170px, 45%); }
+    .freccia { display: none; }
+  }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; padding: 12px 16px; }
+    header { padding: 10px 16px; }
+    .sezione { padding: 36px 16px 4px; }
+    nav.menu { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding: 8px 16px; gap: 20px; }
+    nav.menu details { position: static; }
+    #apriFiltri { display: inline-block; }
+    aside { display: none; position: static; max-height: none; }
+    aside.aperto { display: block; }
+    .apertura { min-height: 380px; }
+    .apertura .testo { padding: 32px 16px; }
+    .banner .testo { padding: 28px 16px; }
+    dialog, #selezione { width: 100vw; max-width: 100vw; max-height: 100vh; height: 100vh; border-radius: 0; }
+    .dett { grid-template-columns: 1fr; }
+    .simili-griglia { grid-template-columns: repeat(2, 1fr); }
+    .colonne { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="avviso" hidden>
+  <span id="avvisoTesto"></span>
+  <button type="button" id="chiudiAvviso" aria-label="Chiudi avviso">✕</button>
+</div>
+
+<header>
+  <a class="logo" href="#inizio">Archivio Tessuti</a>
+  <input id="ricerca" type="search" placeholder="Cerca per nome, codice, colore, fibra, tipologia…" autocomplete="off">
+  <button id="apriFiltri" type="button">Filtri</button>
+  <button id="apriSelezione" type="button">♡ Selezione<span class="badge" id="nSel"></span></button>
+</header>
+
+<!-- Menu: le voci vengono collegate ai filtri dal JavaScript -->
+<nav class="menu" aria-label="Menu principale">
+  <a data-menu-stagione="AI">Autunno-Inverno</a>
+  <a data-menu-stagione="PE">Primavera-Estate</a>
+  <a data-menu-stagione="4S">Quattro stagioni</a>
+  <details>
+    <summary>Tipologie</summary>
+    <div class="tendina" id="menuTipologie"></div>
+  </details>
+  <a href="#catalogo" data-menu-tutto>Tutto l'archivio</a>
+</nav>
+
+<main id="inizio">
+  <!-- Immagine di apertura (foto Unsplash, citata a fondo pagina) -->
+  <section class="apertura" id="apertura">
+    <div class="testo">
+      <h2>Ogni tessuto, a portata di mano.</h2>
+      <p id="aperturaTesto"></p>
+      <div class="azioni">
+        <a class="pillola" href="#catalogo">Sfoglia l'archivio</a>
+        <a class="pillola chiara" href="#vetrina">Le stagioni</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vetrina a schede per stagione -->
+  <section class="sezione" id="vetrina">
+    <div class="schede-tab" role="tablist" id="schedeStagione"></div>
+    <div class="carosello">
+      <button type="button" class="freccia sx" data-scorri="-1" aria-label="Indietro">‹</button>
+      <div class="carosello-riga" id="caroselloRiga"></div>
+      <button type="button" class="freccia dx" data-scorri="1" aria-label="Avanti">›</button>
+    </div>
+  </section>
+
+  <!-- Categorie rotonde -->
+  <section class="sezione">
+    <h2>Sfoglia per tipologia</h2>
+    <div id="categorie"></div>
+  </section>
+
+  <section class="manifesto">
+    <h2>Un buon campionario non si sfoglia: si tocca. Trova il tessuto giusto, poi vai a prenderlo.</h2>
+  </section>
+
+  <!-- Catalogo completo con filtri -->
+  <section class="sezione" id="catalogo" style="padding-bottom:0">
+    <h2>Tutto l'archivio</h2>
+  </section>
+  <div class="layout">
+    <aside id="filtri">
+      <button id="azzera" type="button">Azzera filtri</button>
+      <!-- I gruppi di caselle vengono creati dal JavaScript qui sotto, leggendo i dati -->
+      <div id="gruppi"></div>
+
+      <details open>
+        <summary>Peso <span class="attivi" id="attivi-peso"></span></summary>
+        <div class="intervallo">
+          <input id="pesoDa" type="number" inputmode="numeric" placeholder="da">
+          <span>–</span>
+          <input id="pesoA" type="number" inputmode="numeric" placeholder="a">
+        </div>
+        <p class="nota" id="notaPeso"></p>
+      </details>
+
+      <details>
+        <summary>Altezza (cm) <span class="attivi" id="attivi-altezza"></span></summary>
+        <div class="intervallo">
+          <input id="altezzaDa" type="number" inputmode="numeric" placeholder="da">
+          <span>–</span>
+          <input id="altezzaA" type="number" inputmode="numeric" placeholder="a">
+        </div>
+        <p class="nota" id="notaAltezza"></p>
+      </details>
+    </aside>
+
+    <div class="colonna">
+      <div class="barra">
+        <span id="conteggio"></span>
+        <label>Ordina per
+          <select id="ordina">
+            <option value="codice">Codice</option>
+            <option value="nome">Nome (A–Z)</option>
+            <option value="peso-su">Peso: dal più leggero</option>
+            <option value="peso-giu">Peso: dal più pesante</option>
+            <option value="altezza-giu">Altezza: dalla più alta</option>
+            <option value="ubicazione">Ubicazione</option>
+          </select>
+        </label>
+        <label>Vista
+          <select id="vista">
+            <option value="schede">Schede</option>
+            <option value="compatta">Compatta</option>
+          </select>
+        </label>
+      </div>
+      <div id="chip"></div>
+      <div id="lista"></div>
+      <section id="recenti" aria-label="Visti di recente"></section>
+    </div>
+  </div>
+
+  <!-- Banner del campionario: un clic su un piano filtra per ubicazione -->
+  <section class="banner">
+    <div class="immagine" id="bannerImmagine" role="img" aria-label="Scaffali con rotoli di tessuto"></div>
+    <div class="testo">
+      <span class="etichetta" style="color:var(--accento)">Il campionario</span>
+      <h2>Trova il tessuto sullo scaffale</h2>
+      <p>Ogni tessuto ha la sua ubicazione. Scegli un piano per vedere cosa c'è.</p>
+      <div id="piani"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="colonne">
+    <div>
+      <a class="logo" href="#inizio">Archivio Tessuti</a>
+      <p>Il campionario digitale: cerca, confronta e prepara il prelievo dei campioni.</p>
+    </div>
+    <div>
+      <h3>Tipologie</h3>
+      <ul id="piedeTipologie"></ul>
+    </div>
+    <div>
+      <h3>Stagioni</h3>
+      <ul id="piedeStagioni"></ul>
+    </div>
+    <div class="aiuto">
+      <h3>Aiuto</h3>
+      <details>
+        <summary>Come cercare</summary>
+        <p>Scrivi nella casella in alto nome, codice, colore, fibra o tipologia: ogni parola deve comparire nel tessuto.
+           I numeri accanto ai filtri dicono quanti tessuti troverai.</p>
+      </details>
+      <details>
+        <summary>Preparare il prelievo</summary>
+        <p>Tocca ♡ sui tessuti che ti servono, poi apri "Selezione": l'elenco è ordinato per ubicazione
+           e si può copiare, scaricare per Excel o stampare.</p>
+      </details>
+      <details>
+        <summary>Aggiornare i dati</summary>
+        <p>Modifica il file Excel dell'archivio ed esegui converti.ps1: dati.js viene rigenerato
+           e la pagina mostra i nuovi tessuti al prossimo caricamento.</p>
+      </details>
+    </div>
+  </div>
+  <div id="piede"></div>
+</footer>
+
+<dialog id="dettaglio" aria-label="Scheda del tessuto"></dialog>
+<dialog id="selezione" aria-label="La tua selezione"></dialog>
+
+<!-- I dati dei tessuti, generati da converti.ps1 -->
+<script src="dati.js"></script>
+<script>
+/* =====================================================================
+   1) PREPARAZIONE DEI DATI
+   Per ogni tessuto calcoliamo una volta sola le informazioni utili ai filtri.
+   ===================================================================== */
+
+// Vale true solo nella copia pubblicata online: li' stampa e download non sono permessi,
+// quindi quei pulsanti vengono nascosti. Aprendo il file in locale resta false.
+const PAGINA_PUBBLICATA = false;
+
+// Colori approssimativi per i pallini accanto ai nomi (solo estetica)
+const TINTE = {
+  "arancio ruggine": "#b5541f", "azzurro polvere": "#9db7cf", "beige": "#d8c7a8", "bianco latte": "#f7f3ea",
+  "blu notte": "#1d2440", "bordeaux": "#6d1a2a", "cammello": "#c19a6b", "cioccolato": "#4a2c20",
+  "grigio antracite": "#3a3b3d", "grigio mélange": "#9a9a98", "grigio perla": "#c9c8c4", "marrone tabacco": "#7a4e2d",
+  "navy": "#22305a", "nero": "#111111", "rosa cipria": "#e5bfbf", "rosso": "#b3212c", "sabbia": "#d6c29a",
+  "senape": "#c99a2e", "verde bosco": "#2f4a32", "verde oliva": "#6b6b35", "verde salvia": "#9aab8c",
+  "viola prugna": "#5b2b4a", "écru": "#ede4cf"
+};
+
+// Toglie accenti e maiuscole, cosi' "boucle" trova "BOUCLÉ"
+const normalizza = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+// Le foto prese da Pexels sono salvate anche in foto/web: si usa la copia locale,
+// cosi' si vedono senza internet (e dati.js puo' essere rigenerato da Excel senza cambiare)
+const fotoLocale = src => {
+  const m = String(src).match(/^https:\/\/images\.pexels\.com\/photos\/(\d+)\//);
+  return m ? `foto/web/pexels-${m[1]}.jpg` : src;
+};
+
+const tessuti = TESSUTI.map(t => {
+  // "70%WV 30%PA" -> [{sigla:"WV", nome:"lana vergine", perc:70}, ...]
+  const fibre = [...String(t.composizione).matchAll(/(\d+)\s*%\s*([A-Z]+)/g)]
+    .map(m => ({ perc: Number(m[1]), sigla: m[2], nome: FIBRE[m[2]] || m[2] }));
+  const colori = String(t.colori).split(",").map(c => c.trim()).filter(Boolean);
+  return {
+    ...t,
+    foto: fotoLocale(t.foto),
+    fibre,
+    elencoColori: colori,
+    pesoMin: Number(t.peso_min), pesoMax: Number(t.peso_max),
+    altMin: Number(t.altezza_min), altMax: Number(t.altezza_max),
+    // tutto il testo in cui cerca la casella di ricerca
+    testoRicerca: normalizza([t.codice, t.articolo, t.codici_colore, t.colori, t.composizione,
+      t.composizione_estesa, t.tipologia, t.ubicazione, t.stagione, STAGIONI[t.stagione], t.stato, t.descrizione].join(" | "))
+  };
+});
+const perCodice = new Map(tessuti.map(t => [t.codice, t]));
+
+/* =====================================================================
+   2) DEFINIZIONE DEI FILTRI A CASELLE
+   Ogni gruppo sa come leggere i "valori" di un tessuto.
+   Dentro un gruppo basta che UNO dei valori spuntati corrisponda (OPPURE);
+   tra gruppi diversi devono valere TUTTI (E).
+   ===================================================================== */
+const GRUPPI = [
+  { id: "fibra",     titolo: "Composizione", nota: "Mostra i tessuti che contengono almeno una delle fibre scelte.",
+    valori: t => t.fibre.map(f => f.nome), aperto: true },
+  { id: "colore",    titolo: "Colore", nota: "Mostra i tessuti che contengono almeno uno dei colori scelti.",
+    valori: t => t.elencoColori, aperto: true, pallini: true },
+  { id: "tipologia", titolo: "Tipologia", valori: t => [t.tipologia] },
+  { id: "stagione",  titolo: "Stagione",  valori: t => [t.stagione], etichetta: v => STAGIONI[v] ? `${STAGIONI[v]} (${v})` : v },
+  { id: "ubicazione", titolo: "Ubicazione", valori: t => [t.ubicazione] },
+  { id: "stato",     titolo: "Stato",     valori: t => [t.stato] },
+];
+
+// Ordinamenti disponibili nel menu "Ordina per"
+const ORDINI = {
+  "codice":      (a, b) => a.codice.localeCompare(b.codice, "it"),
+  "nome":        (a, b) => a.articolo.localeCompare(b.articolo, "it"),
+  "peso-su":     (a, b) => a.pesoMin - b.pesoMin,
+  "peso-giu":    (a, b) => b.pesoMax - a.pesoMax,
+  "altezza-giu": (a, b) => b.altMax - a.altMax,
+  "ubicazione":  (a, b) => a.ubicazione.localeCompare(b.ubicazione, "it") || a.codice.localeCompare(b.codice, "it"),
+};
+
+// Le scelte attuali dell'utente
+const scelte = {};
+GRUPPI.forEach(g => scelte[g.id] = new Set());
+let visibili = [];   // i tessuti mostrati ora, nell'ordine scelto
+let aperto = null;   // il tessuto aperto nella scheda di dettaglio
+
+const $ = id => document.getElementById(id);
+const escapeHtml = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// Spunta o toglie una casella dei filtri a partire dal suo valore
+function spunta(gruppo, valore, stato) {
+  const cb = document.querySelector(`label[data-gruppo="${gruppo}"][data-valore="${CSS.escape(valore)}"] input`);
+  if (cb) cb.checked = stato;
+}
+
+// Costruisce le caselle di spunta leggendo i valori presenti nei dati
+function costruisciFiltri() {
+  const contenitore = $("gruppi");
+  GRUPPI.forEach(g => {
+    const valori = [...new Set(tessuti.flatMap(g.valori))].sort((a, b) => a.localeCompare(b, "it"));
+    const det = document.createElement("details");
+    det.open = !!g.aperto;
+    det.innerHTML = `<summary>${g.titolo} <span class="attivi" id="attivi-${g.id}"></span></summary>
+      <div class="opzioni">${valori.map(v => `
+        <label data-gruppo="${g.id}" data-valore="${escapeHtml(v)}">
+          <input type="checkbox" value="${escapeHtml(v)}">
+          ${g.pallini ? `<span class="pallino" style="background:${TINTE[v] || "#999"}"></span>` : ""}
+          <span>${escapeHtml(g.etichetta ? g.etichetta(v) : v)}</span>
+          <span class="n"></span>
+        </label>`).join("")}
+      </div>
+      ${g.nota ? `<p class="nota">${g.nota}</p>` : ""}`;
+    det.querySelectorAll("input").forEach(cb => cb.addEventListener("change", () => {
+      cb.checked ? scelte[g.id].add(cb.value) : scelte[g.id].delete(cb.value);
+      aggiorna();
+    }));
+    contenitore.appendChild(det);
+  });
+
+  // Suggerimenti per peso e altezza: valori minimi e massimi presenti nell'archivio
+  const pMin = Math.min(...tessuti.map(t => t.pesoMin)), pMax = Math.max(...tessuti.map(t => t.pesoMax));
+  const aMin = Math.min(...tessuti.map(t => t.altMin)),  aMax = Math.max(...tessuti.map(t => t.altMax));
+  $("notaPeso").textContent = `Nell'archivio: da ${pMin} a ${pMax}. Un tessuto compare se il suo intervallo di peso tocca quello scelto.`;
+  $("notaAltezza").textContent = `Nell'archivio: da ${aMin} a ${aMax} cm.`;
+  $("pesoDa").placeholder = `da ${pMin}`; $("pesoA").placeholder = `a ${pMax}`;
+  $("altezzaDa").placeholder = `da ${aMin}`; $("altezzaA").placeholder = `a ${aMax}`;
+}
+
+/* =====================================================================
+   3) IL CUORE: decide se un tessuto passa i filtri
+   ===================================================================== */
+const numero = id => { const v = $(id).value.trim(); return v === "" ? null : Number(v); };
+
+// Due intervalli [min,max] si "toccano" se si sovrappongono almeno in un punto
+const sovrappone = (min, max, da, a) => (da === null || max >= da) && (a === null || min <= a);
+
+function passa(t, escludiGruppo) {
+  // Ricerca testuale: ogni parola scritta deve comparire da qualche parte
+  const parole = normalizza($("ricerca").value).split(/\s+/).filter(Boolean);
+  if (!parole.every(p => t.testoRicerca.includes(p))) return false;
+
+  for (const g of GRUPPI) {
+    if (g.id === escludiGruppo || scelte[g.id].size === 0) continue;
+    if (!g.valori(t).some(v => scelte[g.id].has(v))) return false;
+  }
+  if (!sovrappone(t.pesoMin, t.pesoMax, numero("pesoDa"), numero("pesoA"))) return false;
+  if (!sovrappone(t.altMin, t.altMax, numero("altezzaDa"), numero("altezzaA"))) return false;
+  return true;
+}
+
+/* =====================================================================
+   4) LA SELEZIONE (i tessuti segnati col cuore, per il prelievo dei campioni)
+   Resta salvata in questo browser anche chiudendo la pagina.
+   ===================================================================== */
+const CHIAVE_SELEZIONE = "archivio-tessuti-selezione";
+const selezione = new Set((() => {
+  try { return JSON.parse(localStorage.getItem(CHIAVE_SELEZIONE)) || []; } catch { return []; }
+})().filter(c => perCodice.has(c)));
+
+function salvaSelezione() {
+  try { localStorage.setItem(CHIAVE_SELEZIONE, JSON.stringify([...selezione])); } catch {}
+  $("nSel").textContent = selezione.size || "";
+}
+
+// Aspetto di un pulsante cuore: piccolo sulla foto o grande nella scheda di dettaglio
+function statoCuore(b) {
+  const dentro = selezione.has(b.dataset.cuore);
+  b.setAttribute("aria-pressed", dentro);
+  if (b.classList.contains("cuore-grande")) b.textContent = dentro ? "♥ Nella selezione" : "♡ Aggiungi alla selezione";
+  else { b.textContent = dentro ? "♥" : "♡"; b.title = dentro ? "Togli dalla selezione" : "Aggiungi alla selezione"; }
+}
+
+function cambiaSelezione(codice) {
+  selezione.has(codice) ? selezione.delete(codice) : selezione.add(codice);
+  salvaSelezione();
+  document.querySelectorAll(`[data-cuore="${CSS.escape(codice)}"]`).forEach(statoCuore);
+  if ($("selezione").open) disegnaSelezione();
+}
+
+const pulsanteCuore = (t, classe = "cuore") =>
+  `<button type="button" class="${classe}" data-cuore="${escapeHtml(t.codice)}" aria-pressed="false"></button>`;
+
+/* =====================================================================
+   5) DISEGNO DELLA PAGINA
+   ===================================================================== */
+
+// Evidenzia in giallo le parole cercate dentro un testo
+function evidenzia(testo) {
+  const parole = normalizza($("ricerca").value).split(/\s+/).filter(Boolean);
+  const sicuro = escapeHtml(testo);
+  if (!parole.length) return sicuro;
+  const base = normalizza(sicuro);
+  // segna le posizioni da evidenziare lavorando sulla versione senza accenti
+  const segni = new Array(sicuro.length).fill(false);
+  parole.forEach(p => { let i = base.indexOf(p); while (i !== -1) { for (let k = i; k < i + p.length; k++) segni[k] = true; i = base.indexOf(p, i + 1); } });
+  if (base.length !== sicuro.length) return sicuro; // caso raro: lunghezze diverse, niente evidenziazione
+  let out = "", dentro = false;
+  for (let i = 0; i < sicuro.length; i++) {
+    if (segni[i] && !dentro) { out += "<mark>"; dentro = true; }
+    if (!segni[i] && dentro) { out += "</mark>"; dentro = false; }
+    out += sicuro[i];
+  }
+  return out + (dentro ? "</mark>" : "");
+}
+
+// Sfondo mostrato mentre la foto carica, o al suo posto se manca
+const sfondoFoto = t => t.elencoColori.length > 1
+  ? `linear-gradient(135deg, ${t.elencoColori.map(c => TINTE[c] || "#999").join(", ")})`
+  : (TINTE[t.elencoColori[0]] || "var(--accento-chiaro)");
+
+function foto(t, extra = "") {
+  return `<div class="foto" style="background:${sfondoFoto(t)}">
+      <span class="manca" hidden>Foto non disponibile<br>${escapeHtml(t.foto)}</span>
+      <img src="${escapeHtml(t.foto)}" alt="${escapeHtml(t.articolo)}" loading="lazy"
+           onerror="this.previousElementSibling.hidden = false; this.remove()">
+      ${t.stato !== "attivo" ? `<span class="stato-off">${escapeHtml(t.stato)}</span>` : ""}
+      <span class="stagione" title="${escapeHtml(STAGIONI[t.stagione] || t.stagione)}">${escapeHtml(t.stagione)}</span>
+      ${extra}
+    </div>`;
+}
+
+const pallini = (t, e = escapeHtml) =>
+  t.elencoColori.map(c => `<span><span class="pallino" style="background:${TINTE[c] || "#999"}"></span>${e(c)}</span>`).join("");
+
+function scheda(t) {
+  const e = evidenzia;
+  return `<article class="scheda" data-codice="${escapeHtml(t.codice)}" tabindex="0" aria-label="Apri ${escapeHtml(t.articolo)}">
+    ${foto(t, pulsanteCuore(t))}
+    <div class="corpo">
+      <div class="titolo"><b>${e(t.articolo)}</b><span class="codice">${e(t.codice)}</span></div>
+      <div class="tipo">${e(t.tipologia)}</div>
+      <div class="colori">${pallini(t, e)}</div>
+      <dl class="dati">
+        <dt>Composizione</dt><dd>${e(t.composizione_estesa)}</dd>
+        <dt>Peso</dt><dd>${e(t.peso_range)}</dd>
+        <dt>Altezza</dt><dd>${e(t.altezza_range)} cm</dd>
+        <dt>Stagione</dt><dd>${e(STAGIONI[t.stagione] || t.stagione)}</dd>
+        <dt>Ubicazione</dt><dd>${e(t.ubicazione)}</dd>
+        <dt>Cod. colore</dt><dd>${e(t.codici_colore)}</dd>
+      </dl>
+      <div class="descr">${e(t.descrizione)}</div>
+    </div>
+  </article>`;
+}
+
+// Le "etichette" dei filtri attivi sopra le schede: un clic ne toglie una
+let azioniChip = [];
+function disegnaChip() {
+  azioniChip = [];
+  const q = $("ricerca").value.trim();
+  if (q) azioniChip.push({ testo: `“${q}”`, togli: () => $("ricerca").value = "" });
+  GRUPPI.forEach(g => scelte[g.id].forEach(v => azioniChip.push({
+    testo: `${g.titolo}: ${g.etichetta ? g.etichetta(v) : v}`,
+    togli: () => { scelte[g.id].delete(v); spunta(g.id, v, false); }
+  })));
+  [["Peso", "pesoDa", "pesoA", ""], ["Altezza", "altezzaDa", "altezzaA", " cm"]].forEach(([nome, da, a, um]) => {
+    const x = numero(da), y = numero(a);
+    if (x !== null || y !== null) azioniChip.push({ testo: `${nome}: ${x ?? "…"}–${y ?? "…"}${um}`, togli: () => { $(da).value = ""; $(a).value = ""; } });
+  });
+  $("chip").innerHTML = azioniChip.map((c, i) => `<button type="button" class="chip" data-chip="${i}">${escapeHtml(c.testo)} ✕</button>`).join("")
+    + (azioniChip.length > 1 ? `<button type="button" class="chip tutti" data-chip="tutti">Azzera tutto</button>` : "");
+}
+
+function aggiorna() {
+  visibili = tessuti.filter(t => passa(t)).sort(ORDINI[$("ordina").value]);
+  $("lista").innerHTML = visibili.length
+    ? visibili.map(scheda).join("")
+    : `<div id="vuoto">Nessun tessuto corrisponde alla ricerca.<br><br><button type="button" onclick="azzera()">Azzera ricerca e filtri</button></div>`;
+  $("lista").querySelectorAll("[data-cuore]").forEach(statoCuore);
+  $("conteggio").textContent = `${visibili.length} di ${tessuti.length} tessuti`;
+
+  // Accanto a ogni casella: quanti tessuti avresti spuntandola (tenendo conto degli altri filtri)
+  GRUPPI.forEach(g => {
+    const base = tessuti.filter(t => passa(t, g.id));
+    document.querySelectorAll(`label[data-gruppo="${g.id}"]`).forEach(l => {
+      const v = l.dataset.valore;
+      const n = base.filter(t => g.valori(t).includes(v)).length;
+      l.querySelector(".n").textContent = n;
+      l.classList.toggle("vuota", n === 0);
+    });
+    $(`attivi-${g.id}`).textContent = scelte[g.id].size ? `(${scelte[g.id].size})` : "";
+  });
+  $("categorie").querySelectorAll("[data-tipologia]").forEach(b => b.setAttribute("aria-pressed", scelte.tipologia.has(b.dataset.tipologia)));
+  $("attivi-peso").textContent = (numero("pesoDa") !== null || numero("pesoA") !== null) ? "(attivo)" : "";
+  $("attivi-altezza").textContent = (numero("altezzaDa") !== null || numero("altezzaA") !== null) ? "(attivo)" : "";
+  disegnaChip();
+  scriviIndirizzo();
+}
+
+function azzera() {
+  $("ricerca").value = "";
+  ["pesoDa", "pesoA", "altezzaDa", "altezzaA"].forEach(id => $(id).value = "");
+  GRUPPI.forEach(g => scelte[g.id].clear());
+  document.querySelectorAll("#gruppi input[type=checkbox]").forEach(cb => cb.checked = false);
+  aggiorna();
+}
+
+/* =====================================================================
+   6) SCHEDA DI DETTAGLIO (si apre cliccando un tessuto)
+   ===================================================================== */
+function apriDettaglio(t) {
+  if (!t) return;
+  aperto = t;
+  ricordaVisto(t.codice);
+  const i = visibili.indexOf(t);
+  // Tessuti simili: stessa tipologia, poi quelli con piu' fibre e colori in comune
+  const simili = tessuti.filter(x => x !== t && x.tipologia === t.tipologia)
+    .map(x => ({ x, punti: x.fibre.filter(f => t.fibre.some(g => g.sigla === f.sigla)).length
+                         + x.elencoColori.filter(c => t.elencoColori.includes(c)).length }))
+    .sort((a, b) => b.punti - a.punti).slice(0, 4).map(o => o.x);
+  const d = $("dettaglio");
+  d.innerHTML = `<div class="finestra-barra">
+      <button type="button" data-vai="-1" ${i <= 0 ? "disabled" : ""} aria-label="Tessuto precedente">‹</button>
+      <span class="pos">${i >= 0 ? `${i + 1} di ${visibili.length}` : ""}</span>
+      <button type="button" data-vai="1" ${i < 0 || i >= visibili.length - 1 ? "disabled" : ""} aria-label="Tessuto successivo">›</button>
+      <button type="button" class="chiudi" data-chiudi aria-label="Chiudi">✕</button>
+    </div>
+    <div class="dett">
+      ${foto(t)}
+      <div class="dett-info">
+        <div class="tipo">${escapeHtml(t.tipologia)}</div>
+        <div class="titolo"><h2>${escapeHtml(t.articolo)}</h2><span class="codice">${escapeHtml(t.codice)}</span></div>
+        <div class="colori">${pallini(t)}</div>
+        ${pulsanteCuore(t, "cuore-grande")}
+        <dl class="dati">
+          <dt>Composizione</dt><dd>${escapeHtml(t.composizione_estesa)}</dd>
+          <dt>Sigle</dt><dd>${escapeHtml(t.composizione)}</dd>
+          <dt>Peso</dt><dd>${escapeHtml(t.peso_range)}</dd>
+          <dt>Altezza</dt><dd>${escapeHtml(t.altezza_range)} cm</dd>
+          <dt>Stagione</dt><dd>${escapeHtml(STAGIONI[t.stagione] || t.stagione)}</dd>
+          <dt>Stato</dt><dd>${escapeHtml(t.stato)}</dd>
+          <dt>Ubicazione</dt><dd>${escapeHtml(t.ubicazione)}</dd>
+          <dt>Cod. colore</dt><dd>${escapeHtml(t.codici_colore)}</dd>
+        </dl>
+        <div class="descr">${escapeHtml(t.descrizione)}</div>
+        <p class="nota">I colori sullo schermo possono differire dal tessuto reale: verifica sempre sul campione.</p>
+        <div class="crediti">${/^foto/i.test(t.fotografo) ? "" : "Foto: "}${escapeHtml(t.fotografo)}</div>
+      </div>
+    </div>
+    ${simili.length ? `<div class="simili"><h3>Tessuti simili</h3><div class="simili-griglia">${simili.map(x => `
+      <div class="mini" data-apri="${escapeHtml(x.codice)}" role="button" tabindex="0">
+        ${foto(x)}<b>${escapeHtml(x.articolo)}</b><span class="codice">${escapeHtml(x.codice)}</span>
+      </div>`).join("")}</div></div>` : ""}`;
+  d.querySelectorAll("[data-cuore]").forEach(statoCuore);
+  if (!d.open) d.showModal();
+  d.scrollTop = 0;
+  scriviIndirizzo();
+}
+
+/* =====================================================================
+   6b) VISTI DI RECENTE: gli ultimi tessuti aperti, salvati in questo browser
+   ===================================================================== */
+const CHIAVE_RECENTI = "archivio-tessuti-recenti";
+const MAX_RECENTI = 10;
+let recenti = (() => {
+  try { return JSON.parse(localStorage.getItem(CHIAVE_RECENTI)) || []; } catch { return []; }
+})().filter(c => perCodice.has(c));
+
+function ricordaVisto(codice) {
+  recenti = [codice, ...recenti.filter(c => c !== codice)].slice(0, MAX_RECENTI);
+  try { localStorage.setItem(CHIAVE_RECENTI, JSON.stringify(recenti)); } catch {}
+  disegnaRecenti();
+}
+
+function disegnaRecenti() {
+  $("recenti").innerHTML = recenti.length ? `<div class="testa"><h3>Visti di recente</h3>
+      <button type="button" data-cancella-recenti>Cancella</button></div>
+    <div class="recenti-riga">${recenti.map(c => perCodice.get(c)).map(x => `
+      <div class="mini" data-apri="${escapeHtml(x.codice)}" role="button" tabindex="0">
+        ${foto(x)}<b>${escapeHtml(x.articolo)}</b><span class="codice">${escapeHtml(x.codice)}</span>
+      </div>`).join("")}</div>` : "";
+}
+
+/* =====================================================================
+   6c) LA PAGINA INIZIALE: immagini, vetrina per stagione, categorie, piani
+   ===================================================================== */
+// Foto gratuite di Unsplash (licenza Unsplash: uso libero, citate a fondo pagina),
+// salvate in risorse/ cosi' la pagina funziona anche senza internet
+const IMMAGINI = {
+  apertura: "risorse/apertura-rotoli.jpg",
+  banner:   "risorse/banner-scaffali.jpg",
+};
+
+const valoriDi = campo => [...new Set(tessuti.map(t => t[campo]))].sort((a, b) => a.localeCompare(b, "it"));
+const esempioDi = (campo, v) => { const m = tessuti.filter(t => t[campo] === v); return m.find(t => t.stato === "attivo") || m[0]; };
+
+// Come aprire una "categoria": toglie ricerca e filtri, mostra solo quel valore
+// (es. solo "PIANO 2") e porta al catalogo
+function filtraSolo(gruppo, valore) {
+  $("ricerca").value = "";
+  CAMPI_NUMERO.forEach(id => $(id).value = "");
+  GRUPPI.forEach(g => { scelte[g.id].forEach(v => spunta(g.id, v, false)); scelte[g.id].clear(); });
+  scelte[gruppo].add(valore);
+  spunta(gruppo, valore, true);
+  aggiorna();
+  $("catalogo").scrollIntoView();
+}
+
+// Vetrina: una scheda per stagione, ognuna con un carosello di tessuti attivi
+let stagioneVetrina = null;
+function disegnaVetrina(stagione) {
+  stagioneVetrina = stagione;
+  $("schedeStagione").innerHTML = Object.keys(STAGIONI).map(s =>
+    `<button type="button" role="tab" data-stagione="${s}" aria-selected="${s === stagione}">${escapeHtml(STAGIONI[s])}</button>`).join("");
+  $("caroselloRiga").innerHTML = tessuti.filter(t => t.stagione === stagione && t.stato === "attivo").slice(0, 16).map(t => `
+    <div class="pezzo" data-apri="${escapeHtml(t.codice)}" role="button" tabindex="0">
+      ${foto(t, pulsanteCuore(t))}
+      <b>${escapeHtml(t.articolo)}</b>
+      <small>${escapeHtml(t.tipologia)} · ${escapeHtml(t.composizione)}</small>
+    </div>`).join("");
+  $("caroselloRiga").querySelectorAll("[data-cuore]").forEach(statoCuore);
+  $("caroselloRiga").scrollLeft = 0;
+}
+
+function costruisciPagina() {
+  $("apertura").style.backgroundImage = `url("${IMMAGINI.apertura}")`;
+  $("bannerImmagine").style.backgroundImage = `url("${IMMAGINI.banner}")`;
+  $("aperturaTesto").textContent = `${tessuti.length} tessuti, ${valoriDi("tipologia").length} tipologie, ${valoriDi("ubicazione").length} piani di campionario. Cerca, confronta e prepara il prelievo.`;
+
+  // Categorie rotonde, menu a tendina e colonna del piè di pagina: tutte dalle tipologie
+  const tipi = valoriDi("tipologia");
+  $("categorie").innerHTML = tipi.map(v => `
+    <button type="button" class="cat" data-tipologia="${escapeHtml(v)}" aria-pressed="false">
+      <span class="tondo"><img src="${escapeHtml(esempioDi("tipologia", v).foto)}" alt="" loading="lazy"></span>
+      <span>${escapeHtml(v)}</span>
+    </button>`).join("");
+  const link = (attr, v, testo) => `<a ${attr}="${escapeHtml(v)}">${escapeHtml(testo)}</a>`;
+  $("menuTipologie").innerHTML = tipi.map(v => link("data-tipologia", v, v)).join("");
+  $("piedeTipologie").innerHTML = tipi.map(v => `<li>${link("data-tipologia", v, v)}</li>`).join("");
+  $("piedeStagioni").innerHTML = Object.keys(STAGIONI).map(s => `<li>${link("data-menu-stagione", s, STAGIONI[s])}</li>`).join("");
+  $("piani").innerHTML = valoriDi("ubicazione").map(u =>
+    `<button type="button" data-piano="${escapeHtml(u)}">${escapeHtml(u)} · ${tessuti.filter(t => t.ubicazione === u).length}</button>`).join("");
+  disegnaVetrina(Object.keys(STAGIONI).find(s => tessuti.some(t => t.stagione === s)));
+}
+
+// La vista scelta resta salvata in questo browser
+const CHIAVE_VISTA = "archivio-tessuti-vista";
+function applicaVista(v) {
+  $("vista").value = v === "compatta" ? "compatta" : "schede";
+  $("lista").classList.toggle("compatta", $("vista").value === "compatta");
+  try { localStorage.setItem(CHIAVE_VISTA, $("vista").value); } catch {}
+}
+
+/* =====================================================================
+   7) FINESTRA DELLA SELEZIONE: elenco per il prelievo, raggruppato per ubicazione
+   ===================================================================== */
+const elencoSelezione = () => [...selezione].map(c => perCodice.get(c)).filter(Boolean).sort(ORDINI.ubicazione);
+
+function disegnaSelezione() {
+  const elenco = elencoSelezione();
+  const ubicazioni = [...new Set(elenco.map(t => t.ubicazione))];
+  $("selezione").innerHTML = `<div class="finestra-barra">
+      <h2>La tua selezione (${elenco.length})</h2>
+      <button type="button" class="chiudi" data-chiudi aria-label="Chiudi">✕</button>
+    </div>
+    <div class="sel-corpo">${elenco.length ? `
+      ${ubicazioni.map(u => `<h3>${escapeHtml(u)}</h3>${elenco.filter(t => t.ubicazione === u).map(t => `
+        <div class="riga">
+          <span class="pallino" style="background:${sfondoFoto(t)}"></span>
+          <div data-apri="${escapeHtml(t.codice)}" role="button" tabindex="0">
+            <b>${escapeHtml(t.articolo)}</b> <span class="codice">${escapeHtml(t.codice)}</span>
+            <small>${escapeHtml(t.tipologia)} · ${escapeHtml(t.composizione)} · col. ${escapeHtml(t.codici_colore)} ${escapeHtml(t.colori)}</small>
+          </div>
+          <button type="button" data-togli="${escapeHtml(t.codice)}" aria-label="Togli ${escapeHtml(t.articolo)}">✕</button>
+        </div>`).join("")}`).join("")}
+      <div class="sel-azioni">
+        <button type="button" data-azione="copia">Copia elenco</button>
+        ${PAGINA_PUBBLICATA ? "" : `<button type="button" data-azione="csv">Scarica per Excel</button>
+        <button type="button" data-azione="stampa">Stampa</button>`}
+        <button type="button" data-azione="svuota">Svuota</button>
+      </div>`
+    : `<p class="nota" style="padding:20px 0">Nessun tessuto nella selezione. Tocca ♡ su una scheda per aggiungerlo.</p>`}
+    </div>`;
+}
+
+const COLONNE = ["codice", "articolo", "tipologia", "colori", "codici_colore", "composizione_estesa", "peso_range", "altezza_range", "ubicazione", "stato"];
+
+function azioneSelezione(azione, pulsante) {
+  const elenco = elencoSelezione();
+  if (azione === "copia") {
+    const testo = elenco.map(t => [t.codice, t.articolo, `col. ${t.codici_colore} ${t.colori}`, t.ubicazione].join("\t")).join("\n");
+    const fatto = () => { pulsante.textContent = "Copiato ✓"; setTimeout(() => pulsante.textContent = "Copia elenco", 1500); };
+    navigator.clipboard?.writeText(testo).then(fatto, () => prompt("Copia questo elenco:", testo)) ?? prompt("Copia questo elenco:", testo);
+  }
+  if (azione === "csv") {
+    // punto e virgola: e' il separatore che Excel italiano apre direttamente
+    const cella = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const righe = [COLONNE.join(";"), ...elenco.map(t => COLONNE.map(c => cella(t[c])).join(";"))];
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["﻿" + righe.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+    a.download = "selezione-tessuti.csv";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  if (azione === "stampa") {
+    const w = window.open("", "_blank");
+    if (!w) return alert("Il browser ha bloccato la finestra di stampa.");
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>Selezione tessuti</title>
+      <style>body{font:13px system-ui,sans-serif;margin:24px}table{border-collapse:collapse;width:100%}
+      th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#f3eee8}</style>
+      <h1 style="font-size:18px">Selezione tessuti – ${new Date().toLocaleDateString("it-IT")}</h1>
+      <table><tr><th>✓</th><th>Ubicazione</th><th>Codice</th><th>Articolo</th><th>Colore</th><th>Composizione</th><th>Peso</th><th>Altezza</th></tr>
+      ${elenco.map(t => `<tr><td></td><td>${escapeHtml(t.ubicazione)}</td><td>${escapeHtml(t.codice)}</td><td>${escapeHtml(t.articolo)}</td>
+        <td>${escapeHtml(t.codici_colore)} ${escapeHtml(t.colori)}</td><td>${escapeHtml(t.composizione_estesa)}</td>
+        <td>${escapeHtml(t.peso_range)}</td><td>${escapeHtml(t.altezza_range)}</td></tr>`).join("")}</table>`);
+    w.document.close();
+    w.print();
+  }
+  // Svuota chiede conferma nella pagina stessa: il primo clic cambia il pulsante, il secondo svuota
+  if (azione === "svuota") {
+    if (pulsante.dataset.conferma) return [...selezione].forEach(cambiaSelezione);
+    pulsante.dataset.conferma = "1";
+    pulsante.textContent = "Sicuro? Tocca di nuovo per svuotare";
+    setTimeout(() => { if (pulsante.isConnected) { delete pulsante.dataset.conferma; pulsante.textContent = "Svuota"; } }, 4000);
+  }
+}
+
+/* =====================================================================
+   8) INDIRIZZO DELLA PAGINA: ricerca, filtri e tessuto aperto finiscono dopo il #,
+   cosi' si puo' salvare o mandare il link a una ricerca precisa
+   ===================================================================== */
+const CAMPI_NUMERO = ["pesoDa", "pesoA", "altezzaDa", "altezzaA"];
+
+function scriviIndirizzo() {
+  const p = new URLSearchParams();
+  const q = $("ricerca").value.trim();
+  if (q) p.set("q", q);
+  GRUPPI.forEach(g => { if (scelte[g.id].size) p.set(g.id, [...scelte[g.id]].join("|")); });
+  CAMPI_NUMERO.forEach(id => { if ($(id).value.trim()) p.set(id, $(id).value.trim()); });
+  if ($("ordina").value !== "codice") p.set("ordina", $("ordina").value);
+  if (aperto) p.set("tessuto", aperto.codice);
+  const h = p.toString();
+  try { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); } catch {}
+}
+
+function leggiIndirizzo() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  $("ricerca").value = p.get("q") || "";
+  GRUPPI.forEach(g => (p.get(g.id) || "").split("|").filter(Boolean)
+    .forEach(v => { scelte[g.id].add(v); spunta(g.id, v, true); }));
+  CAMPI_NUMERO.forEach(id => $(id).value = p.get(id) || "");
+  if (ORDINI[p.get("ordina")]) $("ordina").value = p.get("ordina");
+  return perCodice.get(p.get("tessuto"));
+}
+
+/* =====================================================================
+   9) AVVIO E COLLEGAMENTO DEI PULSANTI
+   ===================================================================== */
+costruisciFiltri();
+costruisciPagina();
+const daAprire = leggiIndirizzo();
+applicaVista((() => { try { return localStorage.getItem(CHIAVE_VISTA); } catch { return null; } })());
+$("vista").addEventListener("change", () => applicaVista($("vista").value));
+
+// Collegamenti a tipologie, stagioni e piani (menu, categorie rotonde, banner, piè di pagina):
+// mostrano solo quel valore nel catalogo
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-tipologia], [data-menu-stagione], [data-piano], [data-menu-tutto]");
+  if (!el) return;
+  if (el.dataset.tipologia) filtraSolo("tipologia", el.dataset.tipologia);
+  else if (el.dataset.menuStagione) filtraSolo("stagione", el.dataset.menuStagione);
+  else if (el.dataset.piano) filtraSolo("ubicazione", el.dataset.piano);
+  else { e.preventDefault(); azzera(); $("catalogo").scrollIntoView(); }
+  el.closest("nav details")?.removeAttribute("open");
+});
+
+// Vetrina: cambio di stagione, frecce del carosello, cuore e apertura del tessuto
+$("vetrina").addEventListener("click", e => {
+  const el = e.target.closest("[data-stagione], [data-scorri], [data-cuore], [data-apri]");
+  if (!el) return;
+  if (el.dataset.stagione) disegnaVetrina(el.dataset.stagione);
+  else if (el.dataset.scorri) $("caroselloRiga").scrollBy({ left: Number(el.dataset.scorri) * $("caroselloRiga").clientWidth * .8, behavior: "smooth" });
+  else if (el.dataset.cuore) cambiaSelezione(el.dataset.cuore);
+  else apriDettaglio(perCodice.get(el.dataset.apri));
+});
+
+// Barra avvisi in cima: una volta chiusa non ricompare in questo browser
+const CHIAVE_AVVISO = "archivio-tessuti-avviso-chiuso";
+$("avvisoTesto").textContent = `${tessuti.length} tessuti in archivio · dati aggiornati il ${AGGIORNATO} · tocca ♡ per preparare il prelievo dei campioni`;
+try { $("avviso").hidden = localStorage.getItem(CHIAVE_AVVISO) === AGGIORNATO; } catch { $("avviso").hidden = false; }
+$("chiudiAvviso").addEventListener("click", () => {
+  $("avviso").hidden = true;
+  try { localStorage.setItem(CHIAVE_AVVISO, AGGIORNATO); } catch {}
+});
+
+$("recenti").addEventListener("click", e => {
+  if (e.target.closest("[data-cancella-recenti]")) {
+    recenti = [];
+    try { localStorage.removeItem(CHIAVE_RECENTI); } catch {}
+    return disegnaRecenti();
+  }
+  const m = e.target.closest("[data-apri]");
+  if (m) apriDettaglio(perCodice.get(m.dataset.apri));
+});
+$("ricerca").addEventListener("input", aggiorna);
+CAMPI_NUMERO.forEach(id => $(id).addEventListener("input", aggiorna));
+$("ordina").addEventListener("change", aggiorna);
+$("azzera").addEventListener("click", azzera);
+$("apriFiltri").addEventListener("click", () => $("filtri").classList.toggle("aperto"));
+$("apriSelezione").addEventListener("click", () => { disegnaSelezione(); $("selezione").showModal(); });
+
+$("chip").addEventListener("click", e => {
+  const c = e.target.closest("[data-chip]");
+  if (!c) return;
+  c.dataset.chip === "tutti" ? azzera() : (azioniChip[c.dataset.chip].togli(), aggiorna());
+});
+
+// Clic sulle schede: il cuore aggiunge alla selezione, il resto apre il dettaglio
+$("lista").addEventListener("click", e => {
+  const cuore = e.target.closest("[data-cuore]");
+  if (cuore) return cambiaSelezione(cuore.dataset.cuore);
+  const s = e.target.closest(".scheda");
+  if (s) apriDettaglio(perCodice.get(s.dataset.codice));
+});
+// Invio sulla tastiera equivale al clic per gli elementi "cliccabili" che non sono pulsanti
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.matches(".scheda, [data-apri], nav a")) e.target.click();
+});
+
+$("dettaglio").addEventListener("click", e => {
+  const d = $("dettaglio");
+  if (e.target === d) return d.close();   // clic sullo sfondo scuro
+  const el = e.target.closest("[data-cuore], [data-vai], [data-apri], [data-chiudi]");
+  if (!el) return;
+  if ("cuore" in el.dataset) cambiaSelezione(el.dataset.cuore);
+  else if ("vai" in el.dataset) apriDettaglio(visibili[visibili.indexOf(aperto) + Number(el.dataset.vai)]);
+  else if ("apri" in el.dataset) apriDettaglio(perCodice.get(el.dataset.apri));
+  else d.close();
+});
+$("dettaglio").addEventListener("keydown", e => {
+  const i = visibili.indexOf(aperto);
+  if (e.key === "ArrowLeft" && i > 0) apriDettaglio(visibili[i - 1]);
+  if (e.key === "ArrowRight" && i >= 0 && i < visibili.length - 1) apriDettaglio(visibili[i + 1]);
+});
+$("dettaglio").addEventListener("close", () => { aperto = null; scriviIndirizzo(); });
+
+$("selezione").addEventListener("click", e => {
+  const s = $("selezione");
+  if (e.target === s) return s.close();
+  const el = e.target.closest("[data-togli], [data-apri], [data-azione], [data-chiudi]");
+  if (!el) return;
+  if ("togli" in el.dataset) cambiaSelezione(el.dataset.togli);
+  else if ("apri" in el.dataset) { s.close(); apriDettaglio(perCodice.get(el.dataset.apri)); }
+  else if ("azione" in el.dataset) azioneSelezione(el.dataset.azione, el);
+  else s.close();
+});
+
+$("piede").innerHTML = `<span>Dati aggiornati il ${escapeHtml(AGGIORNATO)} da archivio_demo_vallerosa.xlsx · I colori a schermo sono indicativi</span>
+  <span>Foto di apertura e del campionario: <a href="https://unsplash.com/photos/rolled-fabrics-of-various-colors-and-patterns-are-displayed-PUxtEblvJ9U" target="_blank" rel="noopener">Unsplash</a>,
+  <a href="https://unsplash.com/photos/shelves-filled-with-rolls-of-materials-and-supplies-AkmlG-kmIZQ" target="_blank" rel="noopener">Unsplash</a></span>`;
+salvaSelezione();
+disegnaRecenti();
+aggiorna();
+if (daAprire) apriDettaglio(daAprire);
+</script>
+</body>
+</html>
