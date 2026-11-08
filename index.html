@@ -33,6 +33,14 @@
     --bordo: #e4ddd2; --accento: #7a2519; --accento-2: #c04d2d; --accento-chiaro: #f3e7dc;
     --scuro: #2b1d17; --su-scuro: #f3ece4; --ombra: none;
     --raggio: 4px; --pillola: 9999px;
+    --bordo-campo: #8f877c;            /* bordo di caselle e menu a tendina (contrasto >= 3:1) */
+    --su-accento: #fff; --errore: #b3261e; --evidenzia: #f5d76e;
+    /* Elementi appoggiati sulle foto: restano chiari in entrambi i temi */
+    --su-foto: rgba(252,249,244,.95); --su-foto-testo: #1a1a1a; --ruggine: #7a2519;
+    /* Testi del pie' di pagina scuro */
+    --su-scuro-tenue: #cfc4b8; --su-scuro-debole: #a99c8f;
+    /* Scala dei caratteri: usare solo questi valori */
+    --t-xs: 12px; --t-sm: 13px; --t-base: 15px; --t-md: 17px; --t-lg: 20px; --t-xl: 24px; --t-2xl: 32px;
     --carattere: "Work Sans", Verdana, sans-serif;
     --titoli: "Zilla Slab", "Times New Roman", serif;
     --etichette: "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -42,62 +50,62 @@
     :root:not([data-theme="light"]) {
       --sfondo: #17120f; --pannello: #211a16; --testo: #f3ece4; --tenue: #b3a89c;
       --bordo: #3a2f28; --accento: #e08a6a; --accento-2: #e8a184; --accento-chiaro: #3a241b;
-      --scuro: #0f0b09; color-scheme: dark;
+      --scuro: #0f0b09; --bordo-campo: #7a6b5f; --su-accento: #17120f; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --sfondo: #17120f; --pannello: #211a16; --testo: #f3ece4; --tenue: #b3a89c;
     --bordo: #3a2f28; --accento: #e08a6a; --accento-2: #e8a184; --accento-chiaro: #3a241b;
-    --scuro: #0f0b09; color-scheme: dark;
+    --scuro: #0f0b09; --bordo-campo: #7a6b5f; --su-accento: #17120f; color-scheme: dark;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 80px; }
-  body { margin: 0; font-family: var(--carattere); background: var(--sfondo); color: var(--testo); font-size: 15px; }
+  body { margin: 0; font-family: var(--carattere); background: var(--sfondo); color: var(--testo); font-size: var(--t-base); }
   h1, h2, h3 { font-family: var(--titoli); font-weight: 700; }
   .etichetta { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
 
   /* ====== BARRA AVVISI IN CIMA (si chiude con la ✕) ====== */
-  #avviso { background: var(--accento); color: #fff; font-size: 13px; text-align: center; padding: 7px 40px; position: relative; }
+  #avviso { background: var(--accento); color: var(--su-accento); font-size: var(--t-sm); text-align: center; padding: 7px 40px; position: relative; }
   #avviso[hidden] { display: none; }
   #avviso button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 0 8px;
-                   border: none; background: none; color: inherit; font-size: 16px; }
+                   border: none; background: none; color: inherit; font-size: var(--t-base); }
 
   /* ====== INTESTAZIONE: logo, ricerca, selezione ====== */
   header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--sfondo); border-bottom: 1px solid var(--bordo);
            padding: 12px 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-  .logo { font-family: var(--titoli); font-size: 24px; font-weight: 700; margin: 0; color: var(--accento);
+  .logo { font-family: var(--titoli); font-size: var(--t-xl); font-weight: 700; margin: 0; color: var(--accento);
           letter-spacing: .02em; text-decoration: none; white-space: nowrap; }
-  #ricerca { flex: 1; min-width: 200px; padding: 10px 14px; font-size: 15px; border: 1px solid #c2c2c0;
+  #ricerca { flex: 1; min-width: 200px; padding: 10px 14px; font-size: var(--t-base); border: 1px solid var(--bordo-campo);
              border-radius: var(--raggio); background: var(--pannello); color: var(--testo); font-family: inherit; }
   #ricerca:focus { outline: 2px solid var(--accento); border-color: transparent; }
   #apriFiltri { display: none; }
   .badge { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 4px; border-radius: var(--pillola);
-           background: var(--accento); color: #fff; font-size: 12px; font-weight: 600; text-align: center; }
+           background: var(--accento); color: var(--su-accento); font-size: var(--t-xs); font-weight: 600; text-align: center; }
   .badge:empty { display: none; }
 
   /* ====== MENU DI NAVIGAZIONE ====== */
   nav.menu { display: flex; justify-content: center; gap: 4px 26px; flex-wrap: wrap; padding: 10px 24px;
              border-bottom: 1px solid var(--bordo); }
   nav.menu a, nav.menu summary { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .08em;
-             font-weight: 600; font-size: 15px; color: var(--testo); text-decoration: none; cursor: pointer; padding: 4px 0; }
+             font-weight: 600; font-size: var(--t-base); color: var(--testo); text-decoration: none; cursor: pointer; padding: 4px 0; }
   nav.menu a:hover, nav.menu summary:hover { color: var(--accento); }
   nav.menu details { position: relative; border: none; padding: 0; }
   nav.menu summary { list-style: none; }
   nav.menu summary::-webkit-details-marker { display: none; }
-  nav.menu summary::after { content: " ▾"; font-size: 12px; }
+  nav.menu summary::after { content: " ▾"; font-size: var(--t-xs); }
   .tendina { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); z-index: 20; margin-top: 8px;
              background: var(--pannello); border: 1px solid var(--bordo); padding: 10px; min-width: 220px;
              display: grid; gap: 2px; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
-  .tendina a { padding: 6px 10px !important; font-size: 14px !important; }
+  .tendina a { padding: 6px 10px !important; font-size: var(--t-base) !important; }
 
   /* ====== PULSANTI ====== */
   button { font: inherit; cursor: pointer; border-radius: var(--raggio); padding: 8px 12px; border: 1px solid var(--bordo);
            background: var(--pannello); color: var(--testo); }
   button:hover { border-color: var(--accento); }
   button:disabled { opacity: .4; cursor: default; border-color: var(--bordo); }
-  .pillola { border-radius: var(--pillola); background: var(--accento); border: 1px solid var(--accento); color: #fff;
+  .pillola { border-radius: var(--pillola); background: var(--accento); border: 1px solid var(--accento); color: var(--su-accento);
              padding: 12px 28px; font-family: var(--etichette); text-transform: uppercase; letter-spacing: .1em;
-             font-weight: 600; font-size: 15px; text-decoration: none; display: inline-block; }
+             font-weight: 600; font-size: var(--t-base); text-decoration: none; display: inline-block; }
   .pillola:hover { background: var(--accento-2); border-color: var(--accento-2); }
   .pillola.chiara { background: transparent; color: #fff; border-color: #fff; }
   .pillola.chiara:hover { background: #fff; color: var(--accento); }
@@ -108,28 +116,28 @@
   .apertura::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(20,10,5,.7), rgba(20,10,5,.05) 65%); }
   .apertura .testo { position: relative; padding: 48px 6vw; max-width: 760px; }
   .apertura h2 { font-size: clamp(36px, 6vw, 64px); line-height: 1; margin: 0 0 12px; }
-  .apertura p { font-size: 17px; margin: 0 0 22px; }
+  .apertura p { font-size: var(--t-md); margin: 0 0 22px; }
   .apertura .azioni { display: flex; gap: 12px; flex-wrap: wrap; }
 
   /* ====== SEZIONI DELLA PAGINA ====== */
   .sezione { max-width: 1500px; margin: 0 auto; padding: 48px 24px 8px; }
-  .sezione > h2 { font-size: 30px; margin: 0 0 18px; text-align: center; }
+  .sezione > h2 { font-size: var(--t-2xl); margin: 0 0 18px; text-align: center; }
 
   /* Vetrina con schede per stagione (come "New Arrivals / Best Sellers") */
   .schede-tab { display: flex; justify-content: center; gap: 28px; margin-bottom: 22px; }
   .schede-tab button { border: none; background: none; padding: 4px 0; font-family: var(--etichette); text-transform: uppercase;
-                       letter-spacing: .08em; font-weight: 600; font-size: 16px; color: var(--tenue); border-bottom: 2px solid transparent; border-radius: 0; }
+                       letter-spacing: .08em; font-weight: 600; font-size: var(--t-base); color: var(--tenue); border-bottom: 2px solid transparent; border-radius: 0; }
   .schede-tab button[aria-selected="true"] { color: var(--testo); border-bottom-color: var(--accento); }
   .carosello { position: relative; }
   .carosello-riga { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 22%); gap: 18px;
                     overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; }
   .carosello-riga > * { scroll-snap-align: start; }
-  .freccia { position: absolute; top: 38%; width: 42px; height: 42px; border-radius: 50%; padding: 0; font-size: 20px;
+  .freccia { position: absolute; top: 38%; width: 42px; height: 42px; border-radius: 50%; padding: 0; font-size: var(--t-lg);
              background: var(--pannello); box-shadow: 0 2px 10px rgba(0,0,0,.15); z-index: 2; }
   .freccia.sx { left: -14px; } .freccia.dx { right: -14px; }
   .pezzo { cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
   .pezzo .foto { aspect-ratio: 4 / 5; margin-bottom: 8px; }
-  .pezzo b { font-family: var(--titoli); font-size: 17px; }
+  .pezzo b { font-family: var(--titoli); font-size: var(--t-md); }
   .pezzo small { color: var(--tenue); }
   .pezzo:hover b { color: var(--accento); }
 
@@ -138,7 +146,7 @@
   .cat { display: flex; flex-direction: column; align-items: center; gap: 8px; border: none; background: none; padding: 0; width: 108px; }
   .cat .tondo { width: 96px; height: 96px; border-radius: 50%; overflow: hidden; border: 2px solid transparent; background: var(--accento-chiaro); }
   .cat .tondo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cat span { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; font-size: 14px; text-align: center; }
+  .cat span { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; font-size: var(--t-base); text-align: center; }
   .cat:hover .tondo, .cat[aria-pressed="true"] .tondo { border-color: var(--accento); }
   .cat[aria-pressed="true"] span { color: var(--accento); }
 
@@ -150,11 +158,11 @@
   .banner { display: grid; grid-template-columns: 1.3fr 1fr; background: var(--accento-chiaro); margin-top: 48px; }
   .banner .immagine { min-height: 340px; background: #3b2a20 center / cover no-repeat; }
   .banner .testo { padding: 40px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
-  .banner h2 { font-size: 32px; margin: 0; }
+  .banner h2 { font-size: var(--t-2xl); margin: 0; }
   .banner p { margin: 0; color: var(--tenue); }
   #piani { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
   #piani button { border-radius: var(--pillola); border-color: var(--accento); color: var(--accento); background: transparent; padding: 6px 16px; }
-  #piani button:hover { background: var(--accento); color: #fff; }
+  #piani button:hover { background: var(--accento); color: var(--su-accento); }
 
   /* ====== CATALOGO: filtri a sinistra, schede a destra ====== */
   .layout { display: grid; grid-template-columns: 270px 1fr; gap: 28px; padding: 20px 24px; max-width: 1500px; margin: 0 auto; }
@@ -166,29 +174,29 @@
   details { border-bottom: 1px solid var(--bordo); padding: 8px 0; }
   details:last-of-type { border-bottom: none; }
   summary { cursor: pointer; font-weight: 600; padding: 4px 0; list-style-position: inside; }
-  aside summary { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .06em; font-size: 15px; }
-  summary .attivi { color: var(--accento); font-weight: 600; font-size: 13px; }
+  aside summary { font-family: var(--etichette); text-transform: uppercase; letter-spacing: .06em; font-size: var(--t-base); }
+  summary .attivi { color: var(--accento); font-weight: 600; font-size: var(--t-sm); }
   .opzioni { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
   .opzioni label { display: flex; align-items: center; gap: 8px; padding: 3px 4px; border-radius: var(--raggio); cursor: pointer; }
   .opzioni label:hover { background: var(--accento-chiaro); }
-  .opzioni .n { margin-left: auto; color: var(--tenue); font-size: 12px; }
+  .opzioni .n { margin-left: auto; color: var(--tenue); font-size: var(--t-xs); }
   .opzioni label.vuota { opacity: .45; }
   input[type=checkbox] { accent-color: var(--accento); }
   .pallino { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(128,128,128,.5); flex: none; }
   .intervallo { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
-  .intervallo input, select { width: 100%; padding: 6px 8px; border: 1px solid #c2c2c0; border-radius: var(--raggio);
-                      background: var(--pannello); color: var(--testo); font-size: 14px; font-family: inherit; }
-  .nota { font-size: 12px; color: var(--tenue); margin: 6px 0 0; }
+  .intervallo input, select { width: 100%; padding: 6px 8px; border: 1px solid var(--bordo-campo); border-radius: var(--raggio);
+                      background: var(--pannello); color: var(--testo); font-size: var(--t-base); font-family: inherit; }
+  .nota { font-size: var(--t-xs); color: var(--tenue); margin: 6px 0 0; }
   #azzera { width: 100%; margin-bottom: 8px; border-radius: var(--pillola); }
 
   /* ====== BARRA SOPRA LE SCHEDE: conteggio, ordinamento, vista, filtri attivi ====== */
   .barra { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   #conteggio { color: var(--tenue); white-space: nowrap; margin-right: auto; }
-  .barra label { display: flex; align-items: center; gap: 8px; color: var(--tenue); font-size: 14px; }
+  .barra label { display: flex; align-items: center; gap: 8px; color: var(--tenue); font-size: var(--t-base); }
   .barra select { width: auto; }
   #chip { display: flex; flex-wrap: wrap; gap: 6px; }
   #chip:empty { display: none; }
-  .chip { border-radius: var(--pillola); padding: 4px 12px; font-size: 13px; background: var(--accento-chiaro); border-color: transparent; }
+  .chip { border-radius: var(--pillola); padding: 4px 12px; font-size: var(--t-sm); background: var(--accento-chiaro); border-color: transparent; }
   .chip.tutti { background: none; text-decoration: underline; color: var(--tenue); }
 
   /* ====== SCHEDE DEI TESSUTI ====== */
@@ -200,61 +208,65 @@
   .foto img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
   .scheda:hover .foto img, .pezzo:hover .foto img { transform: scale(1.04); }
   .foto .manca { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-                 font-size: 12px; text-align: center; padding: 6px 10px; border-radius: var(--raggio);
+                 font-size: var(--t-xs); text-align: center; padding: 6px 10px; border-radius: var(--raggio);
                  color: #fff; background: rgba(0,0,0,.55); white-space: nowrap; }
   .foto .manca[hidden] { display: none; }
-  .stato-off { position: absolute; top: 10px; left: 10px; background: #b3261e; color: #fff; font-size: 12px; padding: 2px 10px; border-radius: var(--pillola); }
-  .stagione { position: absolute; left: 10px; bottom: 10px; font-family: var(--etichette); font-size: 12px; font-weight: 600;
-              letter-spacing: .08em; padding: 2px 10px; border-radius: var(--pillola); background: rgba(252,249,244,.95); color: #1a1a1a; }
+  .stato-off { position: absolute; top: 10px; left: 10px; background: var(--errore); color: #fff; font-size: var(--t-xs); padding: 2px 10px; border-radius: var(--pillola); }
+  .stagione { position: absolute; left: 10px; bottom: 10px; font-family: var(--etichette); font-size: var(--t-xs); font-weight: 600;
+              letter-spacing: .08em; text-transform: uppercase; padding: 2px 10px; border-radius: var(--pillola); background: var(--su-foto); color: var(--su-foto-testo); }
   .mini .stagione, .mini .stato-off, .mini .manca { display: none; }
-  .cuore { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; padding: 0; border-radius: 50%;
-           border: none; background: rgba(252,249,244,.95); color: #7a2519; font-size: 18px; line-height: 1; }
-  .cuore[aria-pressed="true"] { background: #7a2519; color: #fff; }
+  .cuore { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; padding: 0; border-radius: 50%;
+           border: none; background: var(--su-foto); color: var(--ruggine); font-size: var(--t-md); line-height: 1; }
+  .cuore[aria-pressed="true"] { background: var(--ruggine); color: #fff; }
   .corpo { padding: 12px 2px 0; display: flex; flex-direction: column; gap: 5px; flex: 1; }
-  .titolo { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-  .titolo b { font-family: var(--titoli); font-size: 19px; }
-  .codice { color: var(--tenue); font-size: 12px; font-family: ui-monospace, Consolas, monospace; }
-  .tipo { font-family: var(--etichette); font-size: 13px; color: var(--accento); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
-  .colori { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; }
+  .titolo { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 8px; align-items: baseline; }
+  .titolo b { font-family: var(--titoli); font-size: var(--t-lg); }
+  /* Scheda leggera: composizione, peso e ubicazione; il resto e' nella scheda di dettaglio */
+  .comp { font-size: var(--t-sm); }
+  .meta { display: flex; flex-wrap: wrap; gap: 0 12px; font-size: var(--t-sm); color: var(--tenue); }
+  .meta span + span::before { content: "·"; margin-right: 12px; }
+  .codice { color: var(--tenue); font-size: var(--t-xs); font-family: ui-monospace, Consolas, monospace; }
+  .tipo { font-family: var(--etichette); font-size: var(--t-sm); color: var(--accento); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .colori { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: var(--t-sm); }
   .colori span { display: inline-flex; align-items: center; gap: 5px; }
-  .dati { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: 13px; margin: 2px 0 0; }
+  .dati { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: var(--t-sm); margin: 2px 0 0; }
   .dati dt { color: var(--tenue); }
   .dati dd { margin: 0; }
-  .descr { font-size: 13px; color: var(--tenue); font-style: italic; }
-  .crediti { font-size: 11px; color: var(--tenue); margin-top: auto; padding-top: 4px; }
-  mark { background: #f5d76e; color: #000; border-radius: 2px; }
+  .descr { font-size: var(--t-sm); color: var(--tenue); font-style: italic; }
+  .crediti { font-size: var(--t-xs); color: var(--tenue); margin-top: auto; padding-top: 4px; }
+  mark { background: var(--evidenzia); color: #000; border-radius: 2px; }
   #vuoto { text-align: center; color: var(--tenue); padding: 60px 20px; grid-column: 1 / -1; }
 
   /* Vista compatta: solo foto, nome e codice */
   #lista.compatta { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px 14px; }
-  #lista.compatta .tipo, #lista.compatta .colori, #lista.compatta .dati, #lista.compatta .descr { display: none; }
+  #lista.compatta .tipo, #lista.compatta .colori, #lista.compatta .comp, #lista.compatta .meta { display: none; }
   #lista.compatta .corpo { padding-top: 8px; }
   #lista.compatta .titolo { flex-direction: column; gap: 0; }
-  #lista.compatta .titolo b { font-size: 16px; }
+  #lista.compatta .titolo b { font-size: var(--t-base); }
 
   /* Visti di recente */
   #recenti { border-top: 1px solid var(--bordo); padding-top: 12px; }
   #recenti:empty { display: none; }
   #recenti .testa { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  #recenti h3 { font-size: 17px; margin: 0; }
-  #recenti .testa button { padding: 2px 10px; font-size: 12px; color: var(--tenue); border-radius: var(--pillola); }
+  #recenti h3 { font-size: var(--t-md); margin: 0; }
+  #recenti .testa button { padding: 2px 10px; font-size: var(--t-xs); color: var(--tenue); border-radius: var(--pillola); }
   .recenti-riga { display: flex; gap: 12px; overflow-x: auto; }
   .recenti-riga .mini { width: 92px; flex: none; }
 
   /* ====== PIE' DI PAGINA SCURO A COLONNE ====== */
   footer { background: var(--scuro); color: var(--su-scuro); margin-top: 56px; padding: 48px 24px 24px; }
   .colonne { max-width: 1500px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); gap: 32px; }
-  footer h3 { font-size: 18px; margin: 0 0 12px; }
+  footer h3 { font-size: var(--t-md); margin: 0 0 12px; }
   footer .logo { color: var(--su-scuro); }
-  footer p, footer li { font-size: 14px; color: #cfc4b8; }
+  footer p, footer li { font-size: var(--t-base); color: var(--su-scuro-tenue); }
   footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
-  footer a { color: #cfc4b8; text-decoration: none; cursor: pointer; }
+  footer a { color: var(--su-scuro-tenue); text-decoration: none; cursor: pointer; }
   footer a:hover { color: #fff; text-decoration: underline; }
   footer details { border-bottom: 1px solid rgba(255,255,255,.15); padding: 6px 0; }
-  footer summary { font-size: 14px; }
-  footer details p { margin: 6px 0 4px; font-size: 13px; }
+  footer summary { font-size: var(--t-base); }
+  footer details p { margin: 6px 0 4px; font-size: var(--t-sm); }
   #piede { max-width: 1500px; margin: 32px auto 0; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.15);
-           font-size: 12px; color: #a99c8f; display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
+           font-size: var(--t-xs); color: var(--su-scuro-debole); display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
   #piede a { color: inherit; text-decoration: underline; }
 
   /* ====== FINESTRE: scheda di dettaglio e selezione ====== */
@@ -264,29 +276,29 @@
   #selezione { width: min(640px, calc(100vw - 32px)); }
   .finestra-barra { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 10px 14px;
                     background: var(--sfondo); border-bottom: 1px solid var(--bordo); }
-  .finestra-barra .pos { color: var(--tenue); font-size: 13px; min-width: 70px; text-align: center; }
-  .finestra-barra h2 { font-size: 18px; margin: 0; }
-  .chiudi { margin-left: auto; font-size: 18px; line-height: 1; padding: 6px 12px; }
+  .finestra-barra .pos { color: var(--tenue); font-size: var(--t-sm); min-width: 70px; text-align: center; }
+  .finestra-barra h2 { font-size: var(--t-md); margin: 0; }
+  .chiudi { margin-left: auto; font-size: var(--t-md); line-height: 1; padding: 6px 12px; }
   .dett { display: grid; grid-template-columns: 1fr 1fr; }
   .dett .foto { aspect-ratio: 4 / 5; }
   .dett-info { padding: 24px 28px; display: flex; flex-direction: column; gap: 12px; }
-  .dett-info h2 { font-size: 34px; margin: 0; }
-  .dett-info .dati { font-size: 14px; gap: 6px 14px; padding: 12px 0; border-top: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); }
-  .cuore-grande { border-radius: var(--pillola); padding: 12px 20px; background: var(--accento); border-color: var(--accento); color: #fff;
+  .dett-info h2 { font-size: var(--t-2xl); margin: 0; }
+  .dett-info .dati { font-size: var(--t-base); gap: 6px 14px; padding: 12px 0; border-top: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); }
+  .cuore-grande { border-radius: var(--pillola); padding: 12px 20px; background: var(--accento); border-color: var(--accento); color: var(--su-accento);
                   font-family: var(--etichette); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
   .cuore-grande[aria-pressed="true"] { background: transparent; color: var(--accento); }
   .simili { padding: 18px 28px 28px; border-top: 1px solid var(--bordo); }
-  .simili h3 { font-size: 20px; margin: 0 0 12px; }
+  .simili h3 { font-size: var(--t-lg); margin: 0 0 12px; }
   .simili-griglia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-  .mini { cursor: pointer; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+  .mini { cursor: pointer; display: flex; flex-direction: column; gap: 2px; font-size: var(--t-sm); }
   .mini .foto { aspect-ratio: 1; margin-bottom: 4px; }
   .mini:hover b { color: var(--accento); }
   .sel-corpo { padding: 8px 18px 18px; }
-  .sel-corpo h3 { font-family: var(--etichette); font-size: 14px; color: var(--tenue); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 6px; }
+  .sel-corpo h3 { font-family: var(--etichette); font-size: var(--t-base); color: var(--tenue); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 6px; }
   .riga { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--bordo); }
   .riga .pallino { width: 36px; height: 36px; border-radius: var(--raggio); }
   .riga [data-apri] { flex: 1; cursor: pointer; }
-  .riga small { display: block; color: var(--tenue); font-size: 12px; }
+  .riga small { display: block; color: var(--tenue); font-size: var(--t-xs); }
   .sel-azioni { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 16px; }
   .sel-azioni button { border-radius: var(--pillola); }
 
@@ -299,7 +311,28 @@
   }
   @media (max-width: 800px) {
     .layout { grid-template-columns: 1fr; padding: 12px 16px; }
-    header { padding: 10px 16px; }
+    /* Due colonne di schede anche su telefono */
+    #lista, #lista.compatta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+    .titolo b { font-size: var(--t-md); }
+    .meta { flex-direction: column; } .meta span + span::before { content: none; }
+    /* Intestazione compatta: riga 1 logo + pulsanti, riga 2 ricerca; si nasconde scorrendo in giu' */
+    header { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; padding: 8px 16px;
+             transition: transform .25s ease; }
+    header.nascosto { transform: translateY(-100%); }
+    header .logo { font-size: var(--t-lg); }
+    header button { min-height: 40px; }
+    #ricerca { grid-row: 2; grid-column: 1 / -1; min-width: 0; padding: 9px 12px; }
+    #apriSelezione { min-width: 44px; }
+    .sel-testo, .avviso-extra { display: none; }
+    #avviso { padding: 6px 40px; }
+    /* Menu: voci su una riga, ombra sui bordi per far capire che scorre */
+    nav.menu a, nav.menu summary { white-space: nowrap; }
+    nav.menu { background:
+        linear-gradient(to right, var(--sfondo) 40%, transparent) left / 32px 100% no-repeat local,
+        linear-gradient(to left, var(--sfondo) 40%, transparent) right / 32px 100% no-repeat local,
+        radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.18), transparent) left / 12px 100% no-repeat scroll,
+        radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.18), transparent) right / 12px 100% no-repeat scroll,
+        var(--sfondo); }
     .sezione { padding: 36px 16px 4px; }
     nav.menu { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding: 8px 16px; gap: 20px; }
     nav.menu details { position: static; }
@@ -327,7 +360,7 @@
   <a class="logo" href="#inizio">Archivio Tessuti</a>
   <input id="ricerca" type="search" placeholder="Cerca per nome, codice, colore, fibra, tipologia…" autocomplete="off">
   <button id="apriFiltri" type="button">Filtri</button>
-  <button id="apriSelezione" type="button">♡ Selezione<span class="badge" id="nSel"></span></button>
+  <button id="apriSelezione" type="button" aria-label="Selezione">♡<span class="sel-testo"> Selezione</span><span class="badge" id="nSel"></span></button>
 </header>
 
 <!-- Menu: le voci vengono collegate ai filtri dal JavaScript -->
@@ -697,7 +730,7 @@ function foto(t, extra = "") {
       <img src="${escapeHtml(t.foto)}" alt="${escapeHtml(t.articolo)}" loading="lazy"
            onerror="this.previousElementSibling.hidden = false; this.remove()">
       ${t.stato !== "attivo" ? `<span class="stato-off">${escapeHtml(t.stato)}</span>` : ""}
-      <span class="stagione" title="${escapeHtml(STAGIONI[t.stagione] || t.stagione)}">${escapeHtml(t.stagione)}</span>
+      <span class="stagione">${escapeHtml(STAGIONI[t.stagione] || t.stagione)}</span>
       ${extra}
     </div>`;
 }
@@ -712,16 +745,9 @@ function scheda(t) {
     <div class="corpo">
       <div class="titolo"><b>${e(t.articolo)}</b><span class="codice">${e(t.codice)}</span></div>
       <div class="tipo">${e(t.tipologia)}</div>
+      <div class="comp">${e(t.composizione_estesa)}</div>
+      <div class="meta"><span>Peso ${e(t.peso_range)}</span><span>${e(t.ubicazione)}</span></div>
       <div class="colori">${pallini(t, e)}</div>
-      <dl class="dati">
-        <dt>Composizione</dt><dd>${e(t.composizione_estesa)}</dd>
-        <dt>Peso</dt><dd>${e(t.peso_range)}</dd>
-        <dt>Altezza</dt><dd>${e(t.altezza_range)} cm</dd>
-        <dt>Stagione</dt><dd>${e(STAGIONI[t.stagione] || t.stagione)}</dd>
-        <dt>Ubicazione</dt><dd>${e(t.ubicazione)}</dd>
-        <dt>Cod. colore</dt><dd>${e(t.codici_colore)}</dd>
-      </dl>
-      <div class="descr">${e(t.descrizione)}</div>
     </div>
   </article>`;
 }
@@ -1059,7 +1085,22 @@ $("vetrina").addEventListener("click", e => {
 
 // Barra avvisi in cima: una volta chiusa non ricompare in questo browser
 const CHIAVE_AVVISO = "archivio-tessuti-avviso-chiuso";
-$("avvisoTesto").textContent = `${tessuti.length} tessuti in archivio · dati aggiornati il ${AGGIORNATO} · tocca ♡ per preparare il prelievo dei campioni`;
+// Su telefono si vede solo la prima parte (la seconda ha la classe avviso-extra)
+$("avvisoTesto").innerHTML = `${tessuti.length} tessuti · aggiornato il ${escapeHtml(AGGIORNATO.split(" ")[0])}` +
+  `<span class="avviso-extra"> · tocca ♡ per preparare il prelievo dei campioni</span>`;
+
+// Su telefono l'intestazione si nasconde scorrendo in giu' e ricompare scorrendo in su
+(() => {
+  const testa = document.querySelector("header"), telefono = matchMedia("(max-width: 800px)");
+  let ultimo = scrollY;
+  addEventListener("scroll", () => {
+    const y = scrollY, delta = y - ultimo;
+    if (Math.abs(delta) < 8) return;
+    const nascondi = telefono.matches && delta > 0 && y > 300 && !testa.contains(document.activeElement);
+    testa.classList.toggle("nascosto", nascondi);
+    ultimo = y;
+  }, { passive: true });
+})();
 try { $("avviso").hidden = localStorage.getItem(CHIAVE_AVVISO) === AGGIORNATO; } catch { $("avviso").hidden = false; }
 $("chiudiAvviso").addEventListener("click", () => {
   $("avviso").hidden = true;
